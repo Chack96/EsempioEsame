@@ -1,10 +1,12 @@
 var express = require('express');
 var app = express();
-
+//libreria
+const uuid = require("uuid/v4");
+//Istanza bodyparser per leggere i JSON
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
-var uuid = require('uuid/v4');
 
+//Activate CORS
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods","POST, GET, PUT, DELETE, OPTIONS");
@@ -17,83 +19,87 @@ app.use(function(req, res, next) {
   }
 });
 
-
 var opzioni = {
-    dotfiles: 'ignore', //ignora i files preceduti dal punto
-    etag: false,
-    fallthrough: true, //se non trova il file salta la funzione e va a quella dopo
-    index: 'index.html', //default index
-    maxAge: '1d', //quanto rimane in cache
-    redirect: false,
-    setHeaders: function (res, path, stat) { //imposta il documento
-        res.set('x-timestamp', Date.now())
-    }
+  dotfiles: 'ignore', //ignora i files preceduti dal punto
+  etag: false,
+  fallthrough: true, //se non trova il file salta la funzione e va a quella dopo
+  index: 'index.html', //default index
+  maxAge: '1d', //quanto rimane in cache
+  redirect: false,
+  setHeaders: function (res, path, stat) { //imposta il documento
+      res.set('x-timestamp', Date.now())
+  }
 }
 
 app.use(express.static(__dirname + '/docs', opzioni));
 
-var lista = [];
+var lista = [{
+  taskId : '2a',
+  assignmentId : '5',
+  workerId : 'Franco',
+  assignmentResult : 'corretto'
+}];
 
-// Creo un metodo post per inserire un assignement
-app.post('/InsertAssignement/', function (req, res) {
-  var assignement =
-  {
-    taskID: request.body.taskID,
-    assignementID: uuid(),
-    workerID: request.body.workerID,
-    AssignementResult: request.body.AssignementResult
-  }
 
-  lista.push(assignement);
+app.post('/aggiunta/', function (req, res) {
+  var assignment ={
+    taskId : req.body.taskId,
+    assignmentId : uuid(),
+    workerId : req.body.workerId,
+    assignmentResult : req.body.assignmentResult
+  };
+  lista.push(assignment);
   res.sendStatus(200);
 });
 
-// Creo un metodo get per vedere gli assignement
-app.get('/GetAssignement/', function (req, res)
-{
+
+app.get('/visualizza/', function (req, res) {
   //res.header('Content-Type', 'application/json');
   res.send(lista);
   //res.sendStatus(200);
 });
 
-// Creo un metodo put per aggiornare un assignment dato il suo assignementID
-app.put('/PutAssignement/', function (req, res)
-{
-  var Id = request.body.assignementID;
-  var res = -1;
-  for (var i=0; i<list.size; i++)
-  {
-    if (Id=lista[i].assignementID)
-      res = i;
+app.delete('/cancella/:assignmentId', function (req, res) {
+  //var assignment = req.body.assignmentId;
+  const assignmentId = req.params.assignmentId;
+  var index = -1;
+  for(var i=0; i<lista.length; i++){
+    console.log(i);
+    if(lista[i].assignmentId===assignmentId){
+      index = i;
+      console.log("trovato");
+    }
+
   }
-  if (res==-1)
-    res.sendStatus(404);
-  else
-  {
-    lista[i] = request.body.TaskID;
-    lista[i] = request.body.workerID;
-    lista[i] = request.body.AssignementResult;
+  if(index>-1){
+    lista.splice(index, 1);
     res.sendStatus(200);
   }
-
+  else{
+      res.sendStatus(500);
+  }
 });
 
-// Creo un metodo delete per cancellare un assignement dato il suo assignementID
-app.delete('/DeleteAssignement/', function (req, res)
-{
-  var Id = request.body.assignementID;
-  var res = -1;
-  for (var i=0; i<list.size; i++)
-  {
-    if (Id=lista[i].assignementID)
-      res = i;
+app.post('/modifica/', function (req, res) {
+  var assignment = req.body.assignmentId;
+  var index = -1;
+  for(var i=0; i<lista.length; i++){
+    if(lista[i].assignmentId==assignment)
+      index = i;
+      console.log("found " + assignment);
+      console.log("" + i);
   }
-  if (res==-1)
-    res.sendStatus(404);
-  else
-  {
-    lista.splice(0,i);
+  if(index>-1){
+    console.log("ora modifico");
+    console.log(lista[index]);
+    console.log(lista[index].taskId);
+    lista[index].taskId = req.body.taskId;
+    lista[index].workerId = req.body.workerId;
+    lista[index].assignmentResult = req.body.assignmentResult;
     res.sendStatus(200);
+  }
+  else{
+    res.sendStatus(500);
   }
 });
 
