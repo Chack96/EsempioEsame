@@ -1,9 +1,12 @@
-const app = require('./App.node.js');
-
-//apro server su porta 8080
-//heroku vuole ascoltare sulla sua porta
-//var porta = process.env.PORT || 3000;
 var porta = 8080;
-app.listen(porta, function () {
-    console.log('Server aperto');
+var http = require('http');
+var fs = require('fs');
+
+fs.readFile('./index.html', function (err, html) {
+    if (err) throw err;    
+    http.createServer(function(request, response) {  
+        response.writeHeader(200, {"Content-Type": "text/html"});  
+        response.write(html);  
+        response.end();  
+    }).listen(porta);
 });
