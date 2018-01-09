@@ -33,13 +33,13 @@ var opzioni = {
 
 app.use(express.static(__dirname + '/docs', opzioni));
 
-var lista = [{
-  taskId : '2a',
-  assignmentId : '5',
-  workerId : 'Franco',
-  assignmentResult : 'corretto'
-}];
-
+/*var lista = [{
+  taskId : 'addadd',
+  assignmentId : 'ff4332rr',
+  workerId : 'dddssaad',
+  assignmentResult : 'wrong'
+}];*/
+var lista = [];
 
 app.post('/aggiunta/', function (req, res) {
   var assignment ={
@@ -54,13 +54,11 @@ app.post('/aggiunta/', function (req, res) {
 
 
 app.get('/visualizza/', function (req, res) {
-  //res.header('Content-Type', 'application/json');
   res.send(lista);
-  //res.sendStatus(200);
+  res.sendStatus(200);
 });
 
 app.delete('/cancella/:assignmentId', function (req, res) {
-  //var assignment = req.body.assignmentId;
   const assignmentId = req.params.assignmentId;
   var index = -1;
   for(var i=0; i<lista.length; i++){
@@ -79,15 +77,42 @@ app.delete('/cancella/:assignmentId', function (req, res) {
       res.sendStatus(500);
   }
 });
-
-app.post('/modifica/', function (req, res) {
+app.put('/modifica/', function (req, res) {
+  if(req.body.taskId==null || req.body.workerId==null || req.body.assignmentResult==null || req.body.assignmentId==null){
+    res.sendStatus(500);
+  }
   var assignment = req.body.assignmentId;
   var index = -1;
   for(var i=0; i<lista.length; i++){
-    if(lista[i].assignmentId==assignment)
+    if(lista[i].assignmentId==assignment){
+      index = i;
+      console.log("found " + assignment + " in position "+ i);
+    }
+  }
+  if(index>-1){
+    console.log("ora modifico");
+    console.log(lista[index]);
+    console.log(lista[index].taskId);
+    lista[index].taskId = req.body.taskId;
+    lista[index].workerId = req.body.workerId;
+    lista[index].assignmentResult = req.body.assignmentResult;
+    res.sendStatus(200);
+  }
+  else{
+    res.sendStatus(500);
+  }
+});
+app.put('/modifica/', function (req, res) {
+  console.log(lista.lenght);
+  var assignment = req.body.assignmentId;
+  var index = -1;
+  for(var i=0; i<lista.length; i++){
+    if(lista[i].assignmentId==assignment){
       index = i;
       console.log("found " + assignment);
       console.log("" + i);
+      console.log("" + index);
+    }
   }
   if(index>-1){
     console.log("ora modifico");

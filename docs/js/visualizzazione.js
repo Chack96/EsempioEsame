@@ -1,5 +1,5 @@
-var nodeLocation = "http://localhost:8080/";
-var serverLocation = "http://localhost:8080/";
+var nodeLocation = "https://murmuring-anchorage-59527.herokuapp.com/";
+var serverLocation = "https://murmuring-anchorage-59527.herokuapp.com/";
 
 function visualizza () {
 
